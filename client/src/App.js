@@ -5,6 +5,7 @@ import { Login } from './Login';
 const App = () => {
   const [serverState, setServerState] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
     fetch('/api')
@@ -14,13 +15,14 @@ const App = () => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsAuthorized(true);
+      setToken(token);
     }
   }, []);
 
   return (
     <section>
       <div>Status serwera: {serverState}</div>
-      {isAuthorized ? <Admin /> : <Login />}
+      {isAuthorized ? <Admin token={token} /> : <Login />}
     </section>
   );
 };

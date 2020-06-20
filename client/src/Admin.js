@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const Admin = () => {
+const Admin = ({ token }) => {
   const [posts, setPosts] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -16,6 +16,7 @@ const Admin = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Basic ${token}`,
       },
       body: JSON.stringify({ title, content }),
     })
@@ -26,6 +27,9 @@ const Admin = () => {
   const handlePostDelete = (id) => {
     fetch(`/api/posts/${id}`, {
       method: 'DELETE',
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
     })
       .then((r) => r.json())
       .then(console.warn);

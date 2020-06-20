@@ -40,6 +40,20 @@ app.get('/api/db', async (req, res) => {
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers.authorization?.replace('Basic ', '');
+  if (token) {
+    const user = await db.users.findOne({ token });
+    if (user === null) {
+      res.status(401).json({ authorized: false });
+    } else {
+      next();
+    }
+  } else {
+    res.status(401).json({ authorized: false });
+  }
+};
+
 app.get('/api', (req, res) => {
   res.json({ status: 'Server works' });
 });
@@ -56,7 +70,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // create
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', authMiddleware, async (req, res) => {
   const { title, content } = req.body;
   const status = await db.posts.insert({ title, content });
   res.json(status);
@@ -75,7 +89,7 @@ app.get('/api/posts/:id', async (req, res) => {
 });
 
 // update
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', authMiddleware, async (req, res) => {
   const { title, content } = req.body;
   const status = await db.posts.update(
     { _id: req.params.id },
@@ -85,13 +99,13 @@ app.put('/api/posts/:id', async (req, res) => {
 });
 
 // delete
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', authMiddleware, async (req, res) => {
   const status = await db.posts.remove({ _id: req.params.id });
   res.json(status);
 });
 
 // database backup
-app.get('/api/db', (req, res) => {
+app.get('/api/db-backup', authMiddleware, (req, res) => {
   res.download(
     path.resolve(path.dirname(''), './database/posts.db'),
     'posts.db'
