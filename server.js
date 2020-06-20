@@ -8,6 +8,7 @@ const app = express();
 const httpServer = http.Server(app);
 
 const db = {};
+
 db.posts = Datastore({
   filename: path.resolve(path.dirname(''), './database/posts.db'),
   autoload: true,
@@ -53,6 +54,14 @@ app.put('/api/posts/:id', async (req, res) => {
 app.delete('/api/posts/:id', async (req, res) => {
   const status = await db.posts.remove({ _id: req.params.id });
   res.json(status);
+});
+
+// database backup
+app.get('/api/db', (req, res) => {
+  res.download(
+    path.resolve(path.dirname(''), './database/posts.db'),
+    'posts.db'
+  );
 });
 
 // serve static react app
