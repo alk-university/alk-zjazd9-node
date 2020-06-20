@@ -8,9 +8,7 @@ const Admin = () => {
   useEffect(() => {
     fetch('/api/posts')
       .then((r) => r.json())
-      .then((r) => {
-        setPosts(r.posts);
-      });
+      .then((r) => setPosts(r.posts));
   }, []);
 
   const handlePostAdd = () => {

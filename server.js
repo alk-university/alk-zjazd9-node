@@ -21,6 +21,17 @@ app.get('/api', (req, res) => {
   res.json({ status: 'Server works' });
 });
 
+// user authentication
+app.post('/api/login', (req, res) => {
+  if (req.body.token) {
+    if (req.body.token === 'YWRtaW46cGFzc3dvcmQ=') {
+      res.json({ authorized: true });
+    } else {
+      res.status(401).json({ authorized: false });
+    }
+  }
+});
+
 // create
 app.post('/api/posts', async (req, res) => {
   const { title, content } = req.body;

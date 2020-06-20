@@ -18,7 +18,14 @@ const Login = () => {
       body: JSON.stringify({ token }),
     })
       .then((r) => r.json())
-      .then(console.warn)
+      .then(({ authorized }) => {
+        if (authorized) {
+          localStorage.setItem('token', token);
+          window.location.reload();
+        } else {
+          setHasError(true);
+        }
+      })
       .catch(() => setHasError(true));
   };
 
