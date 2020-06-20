@@ -3,9 +3,23 @@ import React, { useState } from 'react';
 const Login = () => {
   const [name, setName] = useState('wojtek');
   const [password, setPassword] = useState('');
+  const [hasError, setHasError] = useState(false);
 
   const handleLogin = () => {
-    console.warn({ name, password });
+    // 'Basic (name:password)*' // base64
+    const token = btoa(`${name}:${password}`);
+    console.warn({ token });
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    })
+      .then((r) => r.json())
+      .then(console.warn)
+      .catch(() => setHasError(true));
   };
 
   return (
@@ -23,7 +37,7 @@ const Login = () => {
           value={password}
         />
       </div>
-
+      {hasError && <div>Invalid credentials</div>}
       <button onClick={handleLogin}>log in</button>
     </section>
   );
